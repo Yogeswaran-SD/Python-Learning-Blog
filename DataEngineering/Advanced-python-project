@@ -1,0 +1,36 @@
+import pandas as pd
+import os
+import zipfile
+
+# Input and output directories
+INPUT_FILE = "large_data.csv"        # your large CSV file
+OUTPUT_DIR = "partitioned_data"
+ARCHIVE_NAME = "archived_partitions.zip"
+
+# Ensure output folder exists
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# Read large CSV file
+print("Reading CSV file...")
+df = pd.read_csv(INPUT_FILE, parse_dates=['date'])
+
+# Partition data by year-month (YYYY-MM)
+print("Partitioning data by date...")
+df['year_month'] = df['date'].dt.to_period('M')
+
+# For each group (month), create a separate CSV
+for period, group in df.groupby('year_month'):
+    filename = f"{OUTPUT_DIR}/data_{period}.csv"
+    group.to_csv(filename, index=False)
+    print(f"Created partition: {filename}")
+
+# Archive all partitioned CSVs into a single ZIP file
+print("\nArchiving all partitioned CSVs...")
+with zipfile.ZipFile(ARCHIVE_NAME, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    for root, dirs, files in os.walk(OUTPUT_DIR):
+        for file in files:
+            filepath = os.path.join(root, file)
+            zipf.write(filepath, arcname=file)
+            print(f"Archived: {file}")
+
+print(f"\n✅ All partitions archived successfully into '{ARCHIVE_NAME}'")

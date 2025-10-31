@@ -1,0 +1,14 @@
+import time
+
+try:
+    print("Program is running... Press Ctrl + C to stop.")
+    while True:
+        print("Working...")
+        time.sleep(1)
+
+except KeyboardInterrupt:
+    print("\nUser interrupted the program.")
+    print("Exiting gracefully...")
+
+finally:
+    print("Cleanup done. Goodbye!")

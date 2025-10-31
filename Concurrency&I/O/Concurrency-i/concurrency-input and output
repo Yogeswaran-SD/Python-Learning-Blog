@@ -1,0 +1,26 @@
+import asyncio
+import time
+
+async def fetch_data(task_name, delay):
+    print(f"{task_name}: Started fetching data...")
+    await asyncio.sleep(delay)   # Simulate I/O operation (like file read, API call)
+    print(f"{task_name}: Finished fetching data after {delay} seconds")
+    return f"{task_name} result"
+
+async def main():
+    start_time = time.time()
+
+    # Run multiple I/O tasks concurrently
+    task1 = asyncio.create_task(fetch_data("Task 1", 2))
+    task2 = asyncio.create_task(fetch_data("Task 2", 3))
+    task3 = asyncio.create_task(fetch_data("Task 3", 1))
+
+    # Wait for all tasks to complete
+    results = await asyncio.gather(task1, task2, task3)
+
+    print("\nAll tasks completed!")
+    print("Results:", results)
+    print(f"Total time taken: {time.time() - start_time:.2f} seconds")
+
+# Run the main function
+asyncio.run(main())
